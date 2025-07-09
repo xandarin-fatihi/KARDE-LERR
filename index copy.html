@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kardeşler Menü</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #050500; /* Arka plan siyah */
+            color: #fff; /* Yazı rengi beyaz */
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Üstten başlasın */
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-x: hidden; /* Yatay kaydırmayı engelle */
+        }
+
+        .menu-container {
+            width: 1200px; /* Menü genişliğini ayarlayın */
+            max-width: 95%;
+            background-color: rgba(0, 0, 0, 0.7); /* Yarı saydam siyah arka plan */
+            padding: 30px;
+            border-radius: 50px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header-section h1 {
+            font-size: 2.5em;
+            color: #ffcc00; /* Başlık rengi sarımsı */
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .header-section .tagline {
+            font-size: 1.1em;
+            color: #ccc;
+            margin-top: 5px;
+        }
+
+        /* Logo ve Tarih için yer tutucular */
+        .logo-placeholder, .date-placeholder {
+            position: absolute;
+            top: 0;
+            transform: translateY(-50%);
+        }
+
+        .img  {
+            left: 20px;
+            width: 100px; /* Görsel boyutunu ayarlayın */
+            height: 100px;
+            background-color: #a03f3f; /* Geçici renk */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: 0.8em;
+        }
+
+        .date-placeholder {
+            right: 20px;
+            font-size: 1em;
+            color: #aaa;
+            top: 30px; /* Resmi menü başlığının hizasına getirin */
+            transform: none;
+        }
+
+
+        .menu-section {
+            margin-bottom: 40px;
+        }
+
+        .menu-section h2 {
+            font-size: 1.8em;
+            color: #ffcc00;
+            border-bottom: 2px solid #ffcc00;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            text-align: center; /* Başlıkları ortala */
+            padding: 10px 20px; /* Başlık kutucuğunu belirginleştir */
+            background-color: rgba(14, 8, 8, 0.8);
+            border-radius: 8px;
+            display: inline-block; /* Genişliğini içeriğe göre ayarla */
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-bottom: 30px;
+        }
+
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* İki sütunlu düzen */
+            gap: 20px;
+        }
+
+        .menu-item-box {
+            background-color: rgba(0, 0, 0, 0.6); /* Yarı saydam siyah kutucuklar */
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden; /* İçerik taşmasını engelle */
+            position: relative; /* İçerik animasyonu için */
+        }
+
+        .image-box {
+            width: 100%;
+            height: 100px;
+            background-color: #333;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: rgb(104, 76, 76);
+            font-size: 0.85em;
+            text-shadow: 0 0 5px black;
+        }
+
+        .menu-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #caaa09;
+        }
+
+        .item-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out, padding-top 0.5s ease-out; /* padding-top da geçişli olsun */
+            opacity: 0;
+            padding-top: 0;
+        }
+
+        .menu-item-box.expanded .item-details {
+            max-height: 300px; /* Yeterince büyük bir değer */
+            opacity: 1;
+            padding-top: 10px;
+        }
+
+        .item-details ul {
+            list-style: disc inside; /* Madde madde görünüm */
+            padding-left: 0;
+            margin: 0;
+            color: #ccc;
+        }
+
+        .item-details ul li {
+            margin-bottom: 5px;
+            line-height: 1.4;
+        }
+
+        .price {
+            color: #ffcc00;
+            font-size: 1.1em;
+        }
+
+     
+    
+        .single-item-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px; /* Aralarındaki boşluk */
+            margin-top: 40px;
+        }
+
+        .single-item-container .menu-section {
+            flex: 1; /* Eşit genişlikte olmalarını sağla */
+            margin-bottom: 0; /* İç marginini sıfırla */
+        }
+
+        .single-item-container .menu-grid {
+            grid-template-columns: repeat(2, 1fr); /* Tek sütun */
+            gap: 15px;
+        }
+        /* Burger ve Specialler bölümlerini yan yana getirme */
+        .burger-special-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px; /* Aralarındaki boşluk */
+            margin-top: 40px;
+        }
+
+        .burger-special-container .menu-section {
+            flex: 1; /* Eşit genişlikte olmalarını sağla */
+            margin-bottom: 0; /* İç marginini sıfırla */
+        }
+
+        .burger-special-container .menu-grid {
+            grid-template-columns: 3fr; /* Tek sütun */
+            gap: 15px;
+        }
+
+        /* İçecekler bölümü için özel düzen */
+        .beverages-section {
+            display: flex;
+            justify-content: center; /* Ortala */
+            margin-top: 40px;
+        }
+
+        .beverages-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* İki sütun */
+            gap: 20px;
+            width: 50%; /* Genişliğini ayarla */
+        }
+
+        .image-placeholder {
+            background-color: #6a0c0c; /* Geçici arka plan */
+            border-radius: 5px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e33737;
+            font-size: 0.9em;
+            text-align: center;
+            /* Resimlerin orijinal konumlarını taklit etmek için gerekirse position: absolute kullanın */
+        }
+
+        /* Görsel 1: Kumru Ekmeği */
+        .img-kumru {
+            width: 250px;
+            height: 150px;
+            position: absolute;
+            top: 250px; /* Ayarlayın */
+            left: 50px; /* Ayarlayın */
+        }
+        /* Görsel 2: Sandviç Ekmeği */
+        .img-sandvic {
+            width: 250px;
+            height: 150px;
+            position: absolute;
+            top: 250px; /* Ayarlayın */
+            left: 300px; /* Ayarlayın */
+        }
+        /* Görsel 3: Burger Ekmeği */
+        .img-burger-top {
+            width: 250px;
+            height: 150px;
+            position: absolute;
+            top: 250px; /* Ayarlayın */
+            left: 550px; /* Ayarlayın */
+        }
+        /* Görsel 4: Kare Tost Ekmeği */
+        .img-tost {
+            width: 250px;
+            height: 150px;
+            position: absolute;
+            top: 250px; /* Ayarlayın */
+            left: 800px; /* Ayarlayın */
+        }
+        
+
+        /* Küçük ekranlar için düzenlemeler */
+        @media (max-width: 768px) {
+            .menu-container {
+                padding: 15px;
+            }
+
+            .header-section h1 {
+                font-size: 1.8em;
+            }
+
+            .menu-section h2 {
+                font-size: 1.4em;
+            }
+
+            .menu-grid {
+                grid-template-columns: 1fr; /* Tek sütun */
+            }
+
+            .burger-special-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .beverages-grid {
+                grid-template-columns: 1fr;
+                width: 80%;
+            }
+
+            /* Resim yer tutucularının konumlarını ayarlayın */
+            .image-placeholder {
+                position: static; /* Küçük ekranlarda sabit konumdan çıkar */
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+       <div class="menu-container">
+        <div class="header-section">
+            <div class="img-logo">
+                <img src="https://kardeslerbufe.com.tr/images/companies/kardesler_bufe.png" alt="Kardeşler Büfe Logo">
+            </div>
+            <div class="date-placeholder">1974'DEN BERİ</div>
+            <h1>KARDEŞLER</h1>
+            <p class="tagline">LEZZETİN EKMEK ARASI</p>
+        </div>
+
+        <div class="menu-section">
+            <h2>EKMEĞİNİ SEÇ</h2>
+            <div class="menu-grid">
+                <div class="menu-item-box">
+                    <div class="image-box">
+                        <img src="https://images.deliveryhero.io/image/fd-tr/LH/wj1u-listing.jpg" alt="Kumru Ekmeği" width="165" height="100">
+                    </div>
+                    <div class="menu-item-header">KUMRU EKMEĞİ</div>
+                </div>
+                <div class="menu-item-box">
+                    <div class="image-box">
+                        <img src="https://bgnneyesem.com/wp-content/uploads/2016/05/DSC_0224.jpg" alt="Sandviç Ekmeği" width="165" height="100">
+                    </div>
+                    <div class="menu-item-header">SANDVİÇ EKMEĞİ</div>
+                </div>
+                <div class="menu-item-box">
+                    <div class="image-box">
+                        <img src="https://source.unsplash.com/400x300/?burger-bun,burger-bread" alt="Burger Ekmeği">
+                    </div>
+                    <div class="menu-item-header">BURGER EKMEĞİ</div>
+                </div>
+                <div class="menu-item-box">
+                    <div class="image-box">
+                        <img src="https://source.unsplash.com/400x300/?toast-bread,square-bread" alt="Kare Tost Ekmeği">
+                    </div>
+                    <div class="menu-item-header">KARE TOST EKMEĞİ</div>
+                </div>
+            </div>
+        </div>
+
+    
+
+   <div class="burger-special-container">
+            <div class="menu-section">
+                <h2>İÇERİĞİNİ</h2>
+                <div class="menu-grid">
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>HAMBURGER</span>
+                            <span class="price">350 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Turşu</li>
+                                <li>Marul</li>
+                                <li>Domates</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER YUM</span>
+                            <span class="price">380 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Cheddar Peyniri</li>
+                                <li>Yumurta</li>
+                                <li>Turşu</li>
+                                <li>Marul</li>
+                                <li>Domates</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER DOUBLE</span>
+                            <span class="price">410 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Çift Dana Köftesi</li>
+                                <li>Çift Cheddar Peyniri</li>
+                                <li>Turşu</li>
+                                <li>Marul</li>
+                                <li>Domates</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER KABURGALI</span>
+                            <span class="price">430 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Kaburga Eti</li>
+                                <li>Cheddar Peyniri</li>
+                                <li>Karamele Soğan</li>
+                                <li>Barbekü Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER PASTIRMALI</span>
+                            <span class="price">400 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Pastirma</li>
+                                <li>Cheddar Peyniri</li>
+                                <li>Turşu</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER</span>
+                            <span class="price">360 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Cheddar Peyniri</li>
+                                <li>Turşu</li>
+                                <li>Marul</li>
+                                <li>Domates</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h2>SEÇ</h2>
+                <div class="menu-grid">
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>OSMANLI BURGER</span>
+                            <span class="price">260 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Özel Köfte</li>
+                                <li>Özel Sos</li>
+                                <li>Turşu</li>
+                                <li>Soğan</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>TOKI MAX</span>
+                            <span class="price">390 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Çift Köfte</li>
+                                <li>Bol Peynir</li>
+                                <li>Bacon</li>
+                                <li>Özel Toki Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>BÖREK</span>
+                            <span class="price">500 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Kıymalı</li>
+                                <li>Peynirli</li>
+                                <li>Ispanaklı</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>BÜŞRA SPECIAL</span>
+                            <span class="price">400 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Özel Tavuk Eti</li>
+                                <li>Mantarlı Sos</li>
+                                <li>Kremalı</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>HOT DOG</span>
+                            <span class="price">280 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Özel Sosis</li>
+                                <li>Hardal</li>
+                                <li>Ketçap</li>
+                                <li>Turşu</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="burger-special-container">
+            <div class="menu-section">
+                <h2>BURGERLER</h2>
+                <div class="menu-grid">
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>HAMBURGER</span>
+                            <span class="price">350 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Turşu</li>
+                                <li>Marul</li>
+                                <li>Domates</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER YUM</span>
+                            <span class="price">380 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Cheddar Peyniri</li>
+                                <li>Yumurta</li>
+                                <li>Turşu</li>
+                                <li>Marul</li>
+                                <li>Domates</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER DOUBLE</span>
+                            <span class="price">410 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Çift Dana Köftesi</li>
+                                <li>Çift Cheddar Peyniri</li>
+                                <li>Turşu</li>
+                                <li>Marul</li>
+                                <li>Domates</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER KABURGALI</span>
+                            <span class="price">430 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Kaburga Eti</li>
+                                <li>Cheddar Peyniri</li>
+                                <li>Karamele Soğan</li>
+                                <li>Barbekü Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER PASTIRMALI</span>
+                            <span class="price">400 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Pastirma</li>
+                                <li>Cheddar Peyniri</li>
+                                <li>Turşu</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>CHEESEBURGER</span>
+                            <span class="price">360 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Dana Köftesi</li>
+                                <li>Cheddar Peyniri</li>
+                                <li>Turşu</li>
+                                <li>Marul</li>
+                                <li>Domates</li>
+                                <li>Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="menu-section">
+                <h2>SPECIALLER</h2>
+                <div class="menu-grid">
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>OSMANLI BURGER</span>
+                            <span class="price">260 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Özel Köfte</li>
+                                <li>Özel Sos</li>
+                                <li>Turşu</li>
+                                <li>Soğan</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>TOKI MAX</span>
+                            <span class="price">390 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Çift Köfte</li>
+                                <li>Bol Peynir</li>
+                                <li>Bacon</li>
+                                <li>Özel Toki Sos</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>BÖREK</span>
+                            <span class="price">500 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Kıymalı</li>
+                                <li>Peynirli</li>
+                                <li>Ispanaklı</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>BÜŞRA SPECIAL</span>
+                            <span class="price">400 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Özel Tavuk Eti</li>
+                                <li>Mantarlı Sos</li>
+                                <li>Kremalı</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="menu-item-box">
+                        <div class="menu-item-header">
+                            <span>HOT DOG</span>
+                            <span class="price">280 ₺</span>
+                        </div>
+                        <div class="item-details">
+                            <ul>
+                                <li>Özel Sosis</li>
+                                <li>Hardal</li>
+                                <li>Ketçap</li>
+                                <li>Turşu</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+        
+        <div class="menu-section">
+           
+            <span><h2>İÇECEKLER</h2></span>
+             
+            <div class="menu-grid">
+                <div class="menu-item-box">
+                    <div class="menu-item-header">
+                        <span>KUTU İÇECEK</span>
+                        <span class="price">70 ₺</span>
+                    </div>
+                    <div class="item-details">
+                        <ul>
+                            <li>Coca-Cola</li>
+                            <li>Fanta</li>
+                            <li>Sprite</li>
+                            <li>Gazoz</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="menu-item-box">
+                    <div class="menu-item-header">
+                        <span>AYRAN</span>
+                        <span class="price">30 ₺</span>
+                    </div>
+                    <div class="item-details">
+                        <ul>
+                            <li>Normal Ayran</li>
+                            <li>Büyük Ayran</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="menu-item-box">
+                    <div class="menu-item-header">
+                        <span>SODA</span>
+                        <span class="price">70 ₺</span>
+                    </div>
+                    <div class="item-details">
+                        <ul>
+                            <li>Maden Suyu</li>
+                            <li>Limonlu Soda</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="menu-item-box">
+                    <div class="menu-item-header">
+                        <span>SU</span>
+                        <span class="price">30 ₺</span>
+                    </div>
+                    <div class="item-details">
+                        <ul>
+                            <li>Küçük Su</li>
+                            <li>Büyük Su</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-section menu-section">
+           
+            <span><h2>APERATİF</h2></span>
+<div class="single-item-section">
+            <div class="menu-item-box">
+                <div class="menu-item-header">
+                    <span>PATATES KIZARTMASI</span>
+                    <span class="price">150 ₺</span>
+                </div>
+                <div class="item-details">
+                    <ul>
+                        <li>Kızarmış Parmak Patates</li>
+                        <li>İsteğe Bağlı Soslar</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const menuItems = document.querySelectorAll('.menu-item-box');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    // Tıklanan öğenin detay bölümünü bul
+                    const details = item.querySelector('.item-details');
+
+                    if (details) { // Eğer detay bölümü varsa
+                        // Aynı anda sadece bir kutunun açık olmasını istiyorsanız, diğerlerini kapat
+                        menuItems.forEach(otherItem => {
+                            if (otherItem !== item && otherItem.classList.contains('expanded')) {
+                                otherItem.classList.remove('expanded');
+                                const otherDetails = otherItem.querySelector('.item-details');
+                                if (otherDetails) {
+                                    otherDetails.style.maxHeight = '0';
+                                    otherDetails.style.opacity = '0';
+                                    otherDetails.style.paddingTop = '0';
+                                }
+                            }
+                        });
+
+                        // Tıklanan öğeyi genişlet/küçült
+                        item.classList.toggle('expanded');
+                        if (item.classList.contains('expanded')) {
+                            // İçeriğin gerçek yüksekliğini alarak max-height'i ayarla
+                            details.style.maxHeight = details.scrollHeight + "px";
+                            details.style.opacity = '1';
+                            details.style.paddingTop = '10px';
+                        } else {
+                            details.style.maxHeight = '0';
+                            details.style.opacity = '0';
+                            details.style.paddingTop = '0';
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
